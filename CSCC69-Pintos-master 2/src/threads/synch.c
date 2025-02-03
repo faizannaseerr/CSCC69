@@ -32,7 +32,7 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 
-static bool sema_elem_compare_priority(const struct list_elem *,
+static bool sema_compare_priorities(const struct list_elem *,
                                        const struct list_elem *, void *);
 
 /* Initializes semaphore SEMA to VALUE.  A semaphore is a
