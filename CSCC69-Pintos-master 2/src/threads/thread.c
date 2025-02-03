@@ -693,20 +693,20 @@ void insert_sleeping_thread(int64_t wakeup_tick)
 }
 
 /* Wakes up sleeping threads with wakeup time less or equal to the
-currnet time (OS ticks). */
+current time (OS ticks). */
 void wakeup_expired_threads(int64_t os_ticks)
 {
   enum intr_level old_level = intr_disable();
   struct list_elem *e = list_begin(&sleeping_list);
   struct thread *st = list_entry(e, struct thread, elem);
-  for (e = list_begin(&sleeping_list); e != list_end(&sleeping_list) && st->wakeup_tick <= os_ticks;)
-  {
-    e = list_next(e);
-    st->wakeup_tick = -1;
-    list_remove(&st->elem);
-    thread_unblock(st);
-    st = list_entry(e, struct thread, elem);
-  }
+  while (e != list_end (&sleeping_list) && st->wakeup_tick <= os_ticks) 
+    { 
+      e = list_next (e);
+      st->wakeup_tick = -1;
+      list_remove (&st->elem);
+      thread_unblock (st);
+      st = list_entry (e, struct thread, elem);
+    }
   intr_set_level(old_level);
 }
 
