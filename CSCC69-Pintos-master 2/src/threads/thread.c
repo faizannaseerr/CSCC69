@@ -694,9 +694,9 @@ void insert_sleeping_thread(int64_t wakeup_tick)
 current time (OS ticks). */
 void wakeup_expired_threads(int64_t os_ticks)
 {
-  enum intr_level old_level = intr_disable();
   struct list_elem *e = list_begin(&sleeping_list);
   struct thread *st = list_entry(e, struct thread, elem);
+  enum intr_level old_level = intr_disable();
   for (e = list_begin(&sleeping_list); e != list_end(&sleeping_list) && st->wakeup_tick <= os_ticks;)
   {
     e = list_next(e);
