@@ -73,8 +73,6 @@ static void *alloc_frame(struct thread *, size_t size);
 static void schedule(void);
 void thread_schedule_tail(struct thread *prev);
 static tid_t allocate_tid(void);
-static bool lower_wakeup_time_check(const struct list_elem *a_, const struct list_elem *b_,
-                                    void *aux UNUSED);
 
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
@@ -699,14 +697,14 @@ void wakeup_expired_threads(int64_t os_ticks)
   enum intr_level old_level = intr_disable();
   struct list_elem *e = list_begin(&sleeping_list);
   struct thread *st = list_entry(e, struct thread, elem);
-  while (e != list_end (&sleeping_list) && st->wakeup_tick <= os_ticks) 
-    { 
-      e = list_next (e);
-      st->wakeup_tick = -1;
-      list_remove (&st->elem);
-      thread_unblock (st);
-      st = list_entry (e, struct thread, elem);
-    }
+  for (e = list_begin(&sleeping_list); e != list_end(&sleeping_list) && st->wakeup_tick <= os_ticks;)
+  {
+    e = list_next(e);
+    st->wakeup_tick = -1;
+    list_remove(&st->elem);
+    thread_unblock(st);
+    st = list_entry(e, struct thread, elem);
+  }
   intr_set_level(old_level);
 }
 
